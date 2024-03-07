@@ -14,7 +14,7 @@ import io
 from airsim_wrapper import *
 
 # Clave de la API de OpenAI
-client = openai.OpenAI(api_key='API_KEY')
+client = openai.OpenAI(api_key='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')
 
 # Analizador de argumentos
 parser = argparse.ArgumentParser()
@@ -46,6 +46,9 @@ chat_history = [
     }
 ]
 
+# Lista para almacenar las coordenadas guardadas
+saved_coordinates = []
+
 # Función para capturar una imagen desde AirSim
 def capture_image_from_airsim():
     # Conectar con el cliente de AirSim
@@ -70,7 +73,7 @@ def convert_image_for_vision(image):
     
     return image_vision_format
 
-
+# Función para enviar una solicitud a la API de OpenAI para pruebas de visión
 def visionTest():
     # Llamar a la función para capturar la imagen desde AirSim
     image_from_airsim = capture_image_from_airsim()
@@ -118,7 +121,28 @@ def visionTest():
     # Imprimir la respuesta JSON de la API de OpenAI
     print(response.json())
 
+# Función para mover el dron a coordenadas específicas
+def move_to_coordinates(coord_x, coord_y, coord_z):
+    # Mover el dron a las coordenadas especificadas
+    print(f"Moving the drone to coordinates: ({coord_x}, {coord_y}, {coord_z})")
 
+# Función para hacer que el dron siga un circuito basado en una serie de coordenadas
+def seguir_circuito(coordenadas):
+    print("Following the coordinate circuit:")
+    for coordenada in coordenadas:
+        move_to_coordinates(coordenada[0], coordenada[1], coordenada[2])
+
+# Función para guardar coordenadas
+def guardar_coordenadas(coord_x, coord_y, coord_z):
+    saved_coordinates.append((coord_x, coord_y, coord_z))
+    print(f"Saved coordinates: ({coord_x}, {coord_y}, {coord_z})")
+
+# Función para iniciar el seguimiento de un circuito
+def iniciar_seguimiento_circuito():
+    print("Starting the circuit with the saved coordinates...")
+    seguir_circuito(saved_coordinates)
+
+# Función para enviar una solicitud al modelo de lenguaje GPT-3.5
 def ask(prompt):
     chat_history.append(
         {
@@ -139,11 +163,9 @@ def ask(prompt):
     )
     return chat_history[-1]["content"]
 
-
 print(f"Done.")
 
 code_block_regex = re.compile(r"```(.*?)```", re.DOTALL)
-
 
 def extract_python_code(content):
     code_blocks = code_block_regex.findall(content)
@@ -156,7 +178,6 @@ def extract_python_code(content):
         return full_code
     else:
         return None
-
 
 print(f"Initializing AirSim...")
 aw = AirSimWrapper()
@@ -189,11 +210,5 @@ while True:
         exec(extract_python_code(response))
         print("Done!\n")
 
-
-
-     # Realización de detección de objetos en AirSim utilizando la cámara del dron
-        print("Realizando detección de objetos...")
-        try:
-            aw.perform_object_detection()  # Método para realizar detección de objetos en AirSim
-        except Exception as e:
-            print(f"Error: {e}")
+    if question == "!start_circuit_tracking":
+        iniciar_seguimiento_circuito()
