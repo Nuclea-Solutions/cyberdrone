@@ -14,7 +14,7 @@ import io
 from airsim_wrapper import *
 
 # Clave de la API de OpenAI
-client = openai.OpenAI(api_key='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')
+client = openai.OpenAI(api_key='API_KEY')
 
 # Analizador de argumentos
 parser = argparse.ArgumentParser()
