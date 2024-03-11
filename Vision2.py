@@ -117,9 +117,9 @@ chat_history = [
         "role": "assistant",
         "content": """```python
         new_coords = [
-            aw.get_drone_position()[0],
-            aw.get_drone_position()[1],
-            min(aw.get_drone_position()[2] + 10, 30)
+            min(current_position[0], 30),
+            min(current_position[1], 30),
+            min(current_position[2] + 10, 30)
         ]
         aw.fly_to(new_coords)
         ```"""
