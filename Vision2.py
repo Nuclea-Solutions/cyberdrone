@@ -68,17 +68,14 @@ def capture_image_from_airsim():
 
 # Función para convertir la imagen de AirSim a un formato compatible con Vision
 def convert_image_for_vision(image):
-    # Convertir la imagen al formato deseado
     image_vision_format = image.convert("RGB")  # RGB es el formato que usa AirSim
     
     return image_vision_format
 
 # Función para enviar una solicitud a la API de OpenAI para pruebas de visión
 def visionTest():
-    # Llamar a la función para capturar la imagen desde AirSim
     image_from_airsim = capture_image_from_airsim()
 
-    # Llamar a la función para convertir la imagen al formato compatible con Vision
     image_vision_format = convert_image_for_vision(image_from_airsim)
 
     # Obtener la imagen en base64 desde la imagen convertida png
@@ -118,29 +115,7 @@ def visionTest():
     # Realizar la solicitud a la API de OpenAI
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
 
-    # Imprimir la respuesta JSON de la API de OpenAI
     print(response.json())
-
-# Función para mover el dron a coordenadas específicas
-def move_to_coordinates(coord_x, coord_y, coord_z):
-    # Mover el dron a las coordenadas especificadas
-    print(f"Moving the drone to coordinates: ({coord_x}, {coord_y}, {coord_z})")
-
-# Función para hacer que el dron siga un circuito basado en una serie de coordenadas
-def seguir_circuito(coordenadas):
-    print("Following the coordinate circuit:")
-    for coordenada in coordenadas:
-        move_to_coordinates(coordenada[0], coordenada[1], coordenada[2])
-
-# Función para guardar coordenadas
-def guardar_coordenadas(coord_x, coord_y, coord_z):
-    saved_coordinates.append((coord_x, coord_y, coord_z))
-    print(f"Saved coordinates: ({coord_x}, {coord_y}, {coord_z})")
-
-# Función para iniciar el seguimiento de un circuito
-def iniciar_seguimiento_circuito():
-    print("Starting the circuit with the saved coordinates...")
-    seguir_circuito(saved_coordinates)
 
 # Función para enviar una solicitud al modelo de lenguaje GPT-3.5
 def ask(prompt):
@@ -163,6 +138,32 @@ def ask(prompt):
     )
     return chat_history[-1]["content"]
 
+
+# Función para mover el dron a coordenadas específicas
+def move_to_coordinates(coord_x, coord_y, coord_z):
+    # Mover el dron a las coordenadas especificadas
+    print(f"Moving the drone to coordinates: ({coord_x}, {coord_y}, {coord_z})")
+    visionTest()
+
+# Función para hacer que el dron siga un circuito basado en una serie de coordenadas
+def seguir_circuito(coordenadas):
+    print("Following the coordinate circuit:")
+    for coordenada in coordenadas:
+        move_to_coordinates(coordenada[0], coordenada[1], coordenada[2])
+
+# Función para guardar coordenadas
+def guardar_coordenadas(coord_x, coord_y, coord_z):
+    saved_coordinates.append((coord_x, coord_y, coord_z))
+    print(f"Saved coordinates: ({coord_x}, {coord_y}, {coord_z})")
+
+# Función para iniciar el seguimiento de un circuito
+def iniciar_seguimiento_circuito():
+    print("Starting the circuit with the saved coordinates...")
+    seguir_circuito(saved_coordinates)
+
+'''
+//////////////////////////////////////////////////
+'''
 print(f"Done.")
 
 code_block_regex = re.compile(r"```(.*?)```", re.DOTALL)
@@ -178,6 +179,7 @@ def extract_python_code(content):
         return full_code
     else:
         return None
+
 
 print(f"Initializing AirSim...")
 aw = AirSimWrapper()
