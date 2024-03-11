@@ -34,20 +34,6 @@ openai.api_key = config["OPENAI_API_KEY"]
 with open(args.sysprompt, "r") as f:
     sysprompt = f.read()
 
-# Historial de chat inicial
-chat_history = [
-    {
-        "role": "system",
-        "content": sysprompt
-    },
-    {
-        "role": "user",
-        "content": "move 10 units up"
-    }
-]
-
-# Lista para almacenar las coordenadas guardadas
-saved_coordinates = []
 
 # Función para capturar una imagen desde AirSim
 def capture_image_from_airsim():
@@ -117,6 +103,29 @@ def visionTest():
 
     print(response.json())
 
+# Historial de chat inicial
+chat_history = [
+    {
+        "role": "system",
+        "content": sysprompt
+    },
+    {
+        "role": "user",
+        "content": "move 10 units up"
+    },
+    {
+        "role": "assistant",
+        "content": """```python
+        new_coords = [
+            aw.get_drone_position()[0],
+            aw.get_drone_position()[1],
+            min(aw.get_drone_position()[2] + 10, 30)
+        ]
+        aw.fly_to(new_coords)
+        ```"""
+    }
+]
+
 # Función para enviar una solicitud al modelo de lenguaje GPT-3.5
 def ask(prompt):
     chat_history.append(
@@ -138,37 +147,6 @@ def ask(prompt):
     )
     return chat_history[-1]["content"]
 
-
-# Función para mover el dron a coordenadas específicas
-def move_to_coordinates(coord_x, coord_y, coord_z):
-    # Mover el dron a las coordenadas especificadas
-    if (coord_x != previous_coordinates[0]) or (coord_y != previous_coordinates[1]) or (coord_z != previous_coordinates[2]):
-        # Actualizar las coordenadas anteriores
-        previous_coordinates = [coord_x, coord_y, coord_z]
-
-        # Mover el dron a las coordenadas especificadas
-        print(f"Moving the drone to coordinates: ({coord_x}, {coord_y}, {coord_z})")
-        
-       
-        visionTest()
-    else:
-        print("Coordinates unchanged. Skipping movement.")
-
-# Función para hacer que el dron siga un circuito basado en una serie de coordenadas
-def seguir_circuito(coordenadas):
-    print("Following the coordinate circuit:")
-    for coordenada in coordenadas:
-        move_to_coordinates(coordenada[0], coordenada[1], coordenada[2])
-
-# Función para guardar coordenadas
-def guardar_coordenadas(coord_x, coord_y, coord_z):
-    saved_coordinates.append((coord_x, coord_y, coord_z))
-    print(f"Saved coordinates: ({coord_x}, {coord_y}, {coord_z})")
-
-# Función para iniciar el seguimiento de un circuito
-def iniciar_seguimiento_circuito():
-    print("Starting the circuit with the saved coordinates...")
-    seguir_circuito(saved_coordinates)
 
 '''
 //////////////////////////////////////////////////
@@ -221,5 +199,3 @@ while True:
         exec(extract_python_code(response))
         print("Done!\n")
 
-    if question == "!start_circuit_tracking":
-        iniciar_seguimiento_circuito()
