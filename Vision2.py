@@ -142,8 +142,17 @@ def ask(prompt):
 # Función para mover el dron a coordenadas específicas
 def move_to_coordinates(coord_x, coord_y, coord_z):
     # Mover el dron a las coordenadas especificadas
-    print(f"Moving the drone to coordinates: ({coord_x}, {coord_y}, {coord_z})")
-    visionTest()
+    if (coord_x != previous_coordinates[0]) or (coord_y != previous_coordinates[1]) or (coord_z != previous_coordinates[2]):
+        # Actualizar las coordenadas anteriores
+        previous_coordinates = [coord_x, coord_y, coord_z]
+
+        # Mover el dron a las coordenadas especificadas
+        print(f"Moving the drone to coordinates: ({coord_x}, {coord_y}, {coord_z})")
+        
+       
+        visionTest()
+    else:
+        print("Coordinates unchanged. Skipping movement.")
 
 # Función para hacer que el dron siga un circuito basado en una serie de coordenadas
 def seguir_circuito(coordenadas):
