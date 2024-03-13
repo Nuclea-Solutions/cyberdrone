@@ -14,7 +14,7 @@ import io
 from airsim_wrapper import *
 
 # Clave de la API de OpenAI
-client = openai.OpenAI(api_key='API_KEY')
+client = openai.OpenAI(api_key='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')
 
 # Analizador de argumentos
 parser = argparse.ArgumentParser()
@@ -103,6 +103,18 @@ def visionTest():
 
     print(response.json())
 
+def visionView():
+    image_from_airsim = capture_image_from_airsim()
+
+    image_vision_format = convert_image_for_vision(image_from_airsim)
+
+    # Obtener la imagen en base64 desde la imagen convertida png
+    buffer = io.BytesIO()
+    image_vision_format.save(buffer, format="PNG")
+    base64_image = base64.b64encode(buffer.getvalue()).decode()
+
+    return base64_image
+    
 # Historial de chat inicial
 chat_history = [
     {
@@ -111,7 +123,21 @@ chat_history = [
     },
     {
         "role": "user",
-        "content": "move 10 units up"
+        "content": "move 10 units up",        
+    },
+    {
+        "type": "image_url",
+        "image_url": {
+            "url": f"data:image/png;base64,{visionView()}"
+        }
+    },
+    {
+        "role": "assistant2",
+        "content": "No obstacles detected. Proceeding with the current coordinates.",
+    },
+    {
+        "role": "assistant3",
+        "content": f"Obstacle detected! Adjusting drone coordinates to new_coords = [0, 0, 0] aw.fly_to(new_coords)",  
     },
     {
         "role": "assistant",
@@ -135,7 +161,7 @@ def ask(prompt):
         }
     )
     completion = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-vision-preview",
         messages=chat_history,
         temperature=0
     )
@@ -178,6 +204,7 @@ with open(args.prompt, "r") as f:
 ask(prompt)
 print("Welcome to the AirSim chatbot! I am ready to help you with your AirSim questions and commands.")
 
+
 while True:
     question = input("AirSim> ")
 
@@ -187,6 +214,13 @@ while True:
     if question == "!clear":
         os.system("cls")
         continue
+
+    # chat_history.append(
+    #     {
+    #         "role": "assistant2",
+    #         "content": "No obstacles detected. Proceeding with the current coordinates.",
+    #     }
+    # )
 
     response = ask(question)
     visionTest()
