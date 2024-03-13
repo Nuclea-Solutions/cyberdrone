@@ -9,7 +9,7 @@ import json
 import time
 from openai import OpenAI
 
-client = openai.OpenAI(api_key='API_KEY')
+client = openai.OpenAI(api_key='api_key')
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--prompt", type=str, default="prompts/airsim_basic.txt")

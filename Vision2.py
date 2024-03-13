@@ -14,7 +14,7 @@ import io
 from airsim_wrapper import *
 
 # Clave de la API de OpenAI
-client = openai.OpenAI(api_key='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')
+client = openai.OpenAI(api_key='api_key')
 
 # Analizador de argumentos
 parser = argparse.ArgumentParser()
@@ -35,6 +35,8 @@ with open(args.sysprompt, "r") as f:
     sysprompt = f.read()
 
 
+   # =============== VISION ===================
+    
 # Función para capturar una imagen desde AirSim
 def capture_image_from_airsim():
     # Conectar con el cliente de AirSim
@@ -43,6 +45,7 @@ def capture_image_from_airsim():
 
     # Capturar una imagen utilizando la cámara frontal
     responses = client.simGetImages([airsim.ImageRequest("0", airsim.ImageType.Scene, False, False)])
+
     # Obtener la imagen de la respuesta
     image_response = responses[0]
     image_bytes = image_response.image_data_uint8
@@ -103,17 +106,8 @@ def visionTest():
 
     print(response.json())
 
-def visionView():
-    image_from_airsim = capture_image_from_airsim()
 
-    image_vision_format = convert_image_for_vision(image_from_airsim)
-
-    # Obtener la imagen en base64 desde la imagen convertida png
-    buffer = io.BytesIO()
-    image_vision_format.save(buffer, format="PNG")
-    base64_image = base64.b64encode(buffer.getvalue()).decode()
-
-    return base64_image
+# =============== CHAT GPT ===================
     
 # Historial de chat inicial
 chat_history = [
@@ -123,21 +117,7 @@ chat_history = [
     },
     {
         "role": "user",
-        "content": "move 10 units up",        
-    },
-    {
-        "type": "image_url",
-        "image_url": {
-            "url": f"data:image/png;base64,{visionView()}"
-        }
-    },
-    {
-        "role": "assistant2",
-        "content": "No obstacles detected. Proceeding with the current coordinates.",
-    },
-    {
-        "role": "assistant3",
-        "content": f"Obstacle detected! Adjusting drone coordinates to new_coords = [0, 0, 0] aw.fly_to(new_coords)",  
+        "content": "move 10 units up"
     },
     {
         "role": "assistant",
@@ -161,7 +141,7 @@ def ask(prompt):
         }
     )
     completion = client.chat.completions.create(
-        model="gpt-4-vision-preview",
+        model="gpt-3.5-turbo",
         messages=chat_history,
         temperature=0
     )
@@ -204,7 +184,6 @@ with open(args.prompt, "r") as f:
 ask(prompt)
 print("Welcome to the AirSim chatbot! I am ready to help you with your AirSim questions and commands.")
 
-
 while True:
     question = input("AirSim> ")
 
@@ -215,15 +194,8 @@ while True:
         os.system("cls")
         continue
 
-    # chat_history.append(
-    #     {
-    #         "role": "assistant2",
-    #         "content": "No obstacles detected. Proceeding with the current coordinates.",
-    #     }
-    # )
-
     response = ask(question)
-    visionTest()
+    # visionTest()
 
     print(f"\n{response}\n")
 
@@ -232,4 +204,3 @@ while True:
         print("Please wait while I run the code in AirSim...")
         exec(extract_python_code(response))
         print("Done!\n")
-
