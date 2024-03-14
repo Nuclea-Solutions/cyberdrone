@@ -186,16 +186,35 @@ print("Welcome to the AirSim chatbot! I am ready to help you with your AirSim qu
 
 while True:
     question = input("AirSim> ")
-
+    
     if question == "!quit" or question == "!exit":
         break
+
 
     if question == "!clear":
         os.system("cls")
         continue
-
+    
     response = ask(question)
     # visionTest()
+
+    # Coordenadas especificadas inicialmente
+    specified_coordinates = [5, 5, 2]
+
+    # Coordenadas iniciales
+    coordinates = [0, 0, 0]
+
+    while coordinates != specified_coordinates:
+        for i in range(len(coordinates)):
+            coordinates[i] += 1
+            # Si la coordenada actual excede la especificada, restablecerla a 0 y continuar con la siguiente
+            if coordinates[i] > specified_coordinates[i]:
+                coordinates[i] = 0
+            # Si la coordenada actual es igual a la especificada, continuar con la siguiente
+            response = ask(coordinates)
+
+    # Utilizar las nuevas coordenadas en lugar de 'question' al llamar a la función ask
+    response = ask(coordinates)
 
     print(f"\n{response}\n")
 
