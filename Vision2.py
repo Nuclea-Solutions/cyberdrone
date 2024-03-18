@@ -196,7 +196,17 @@ while True:
         continue
     
     response = ask(question)
-    # visionTest()
+    visionTest()
+
+    print(f"\n{response}\n")
+
+    code = extract_python_code(response)
+    if code is not None:
+        print("Please wait while I run the code in AirSim...")
+        exec(extract_python_code(response))
+        print("Done!\n")
+
+
 
     # Coordenadas especificadas inicialmente
     specified_coordinates = [5, 5, 2]
