@@ -87,7 +87,7 @@ def visionTest():
                 "content": [
                     {
                         "type": "text",
-                        "text": "What’s in this image?"
+                        "text": "Dependiendo de lo que vez en la imagen hacia donde te moverias para intentar no chocar? -solo puedes responder con no moverse o si vez algo muy cerca responde con arriba, abajo, izquierda, derecha para que no choques"
                     },
                     {
                         "type": "image_url",
@@ -98,7 +98,7 @@ def visionTest():
                 ]
             }
         ],
-        "max_tokens": 300
+        "max_tokens": 50
     }
 
     # Realizar la solicitud a la API de OpenAI
@@ -208,28 +208,119 @@ while True:
 
 
 
+    # # Coordenadas especificadas inicialmente
+    # specified_coordinates = ('AirSim> !move 5, 5, 2')
+        
     # Coordenadas especificadas inicialmente
     specified_coordinates = [5, 5, 2]
 
+    # aw.fly_to(specified_coordinates)
+    
     # Coordenadas iniciales
     coordinates = [0, 0, 0]
 
-    while coordinates != specified_coordinates:
-        for i in range(len(coordinates)):
-            coordinates[i] += 1
-            # Si la coordenada actual excede la especificada, restablecerla a 0 y continuar con la siguiente
-            if coordinates[i] > specified_coordinates[i]:
-                coordinates[i] = 0
-            # Si la coordenada actual es igual a la especificada, continuar con la siguiente
-            response = ask(coordinates)
+    # # Convertir las coordenadas especificadas a cadenas
+    # move_command = ('AirSim> !move', str(specified_coordinates[0]), str(specified_coordinates[1]), str(specified_coordinates[2]))
 
-    # Utilizar las nuevas coordenadas en lugar de 'question' al llamar a la función ask
-    response = ask(coordinates)
+    # # Concatenar los elementos de la tupla en una cadena
+    # move_command_str = ' '.join(str(item) for item in move_command)
 
-    print(f"\n{response}\n")
+    # # Imprimir la variable move_command_str
+    # print(move_command_str)
 
-    code = extract_python_code(response)
-    if code is not None:
-        print("Please wait while I run the code in AirSim...")
-        exec(extract_python_code(response))
-        print("Done!\n")
+    # Bucle while para iterar hasta que todas las coordenadas sean iguales o superiores a specified_coordinates
+    while coordinates[0] < specified_coordinates[0] or coordinates[1] < specified_coordinates[1] or coordinates[2] < specified_coordinates[2]:
+        if coordinates[0] != specified_coordinates[0]: # x
+            coordinates[0] += 1
+
+            aw.fly_to(coordinates)
+            print('aw.fly_to(coordinates)')
+            print(coordinates)
+            visionTest()
+            time.sleep(15)
+            
+            # # Convertir las coordenadas especificadas a cadenas
+            # move_command = ('AirSim> !move', str(coordinates[0]), str(coordinates[1]), str(coordinates[2]))
+            # # Concatenar los elementos de la tupla en una cadena
+            # move_command_str = ' '.join(str(item) for item in move_command)
+
+            # response = ask(move_command_str)
+
+            # print(f"\n{response}\n")
+
+            # code = extract_python_code(response)
+            # if code is not None:
+            #     print("Please wait while I run the code in AirSim...")
+            #     exec(extract_python_code(response))
+            #     print("Done!\n")
+
+        
+        if coordinates[1] != specified_coordinates[1]: # y
+            coordinates[1] += 1
+
+            aw.fly_to(coordinates)
+            print('aw.fly_to(coordinates)')
+            print(coordinates)
+            visionTest()
+            time.sleep(15)
+
+            # # Convertir las coordenadas especificadas a cadenas
+            # move_command = ('AirSim> !move', str(coordinates[0]), str(coordinates[1]), str(coordinates[2]))
+            # # Concatenar los elementos de la tupla en una cadena
+            # move_command_str = ' '.join(str(item) for item in move_command)
+
+            # response = ask(move_command_str)
+
+            # print(f"\n{response}\n")
+
+            # code = extract_python_code(response)
+            # if code is not None:
+            #     print("Please wait while I run the code in AirSim...")
+            #     exec(extract_python_code(response))
+            #     print("Done!\n")
+
+
+        if coordinates[2] != specified_coordinates[2]: # z
+            coordinates[2] += 1
+
+            aw.fly_to(coordinates)
+            print('aw.fly_to(coordinates)')
+            print(coordinates)
+            visionTest()
+            time.sleep(15)
+
+            # # Convertir las coordenadas especificadas a cadenas
+            # move_command = ('AirSim> !move', str(coordinates[0]), str(coordinates[1]), str(coordinates[2]))
+            # # Concatenar los elementos de la tupla en una cadena
+            # move_command_str = ' '.join(str(item) for item in move_command)
+
+            # response = ask(move_command_str)
+
+            # print(f"\n{response}\n")
+
+            # code = extract_python_code(response)
+            # if code is not None:
+            #     print("Please wait while I run the code in AirSim...")
+            #     exec(extract_python_code(response))
+            #     print("Done!\n")
+
+
+        # Imprimir las coordenadas después de cada iteración
+        print(coordinates)
+
+    # Imprimir las coordenadas finales
+    print("Las coordenadas finales son:", coordinates)
+
+
+
+
+    # # # Utilizar las nuevas coordenadas en lugar de 'question' al llamar a la función ask
+    # response = ask(move_command_str)
+
+    # print(f"\n{response}\n")
+
+    # code = extract_python_code(response)
+    # if code is not None:
+    #     print("Please wait while I run the code in AirSim...")
+    #     exec(extract_python_code(response))
+    #     print("Done!\n")
